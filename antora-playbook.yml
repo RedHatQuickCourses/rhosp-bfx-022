@@ -1,5 +1,5 @@
 site:
-  title: Red Hat OpenStack Networking: Break-fix Practice - Troubleshooting VM Connectivity Issue"
+  title: "Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue"
   start_page: rhosp-bfx-022::index.adoc
 
 content:
