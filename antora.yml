@@ -1,5 +1,5 @@
-name: REPLACEREPONAME
-title: FIXME Course Title
+name: rhosp-bfx-022
+title: "Red Hat OpenStack Networking: Break-fix Practice - Troubleshooting VM Connectivity Issue"
 version: 1
 nav:
 - modules/ROOT/nav.adoc

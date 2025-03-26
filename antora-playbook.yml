@@ -1,6 +1,6 @@
 site:
-  title: FIXME Course Title
-  start_page: REPLACEREPONAME::index.adoc
+  title: Red Hat OpenStack Networking: Break-fix Practice - Troubleshooting VM Connectivity Issue"
+  start_page: rhosp-bfx-022::index.adoc
 
 content:
   sources:
