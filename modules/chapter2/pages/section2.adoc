@@ -1,6 +1,6 @@
 = Guided solution (page 2)
 
-1. Connect to the workstation VM's console to access the instance's console
+1. Connect to the workstation VM's console to access the instance's console.
 +
 Refer to the Access instance’s console instructions under Additional information section of Break-fix Activity page.
 
