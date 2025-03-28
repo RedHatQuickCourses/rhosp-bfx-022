@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Guided solution :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
-    <link rel="prev" href="../chapter1/section3.html">
-    <link rel="next" href="section1.html">
+    <title>Break-fix Scenario :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
+    <link rel="prev" href="section2.html">
+    <link rel="next" href="../chapter2/index.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <script>var uiRootPath = '../../../_'</script>
@@ -55,16 +55,16 @@
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="../chapter1/index.html">What’s in this break-fix?</a>
+    <a class="nav-link" href="index.html">What’s in this break-fix?</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../chapter1/section1.html">Break-fix activity</a>
+    <a class="nav-link" href="section1.html">Break-fix activity</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
+    <a class="nav-link" href="section2.html">Check your work</a>
   </li>
-  <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="../chapter1/section3.html">Break-fix Scenario</a>
+  <li class="nav-item is-current-page" data-depth="2">
+    <a class="nav-link" href="section3.html">Break-fix Scenario</a>
   </li>
 </ul>
   </li>
@@ -72,15 +72,15 @@
   </li>
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
-  <li class="nav-item is-current-page" data-depth="1">
+  <li class="nav-item" data-depth="1">
     <button class="nav-item-toggle"></button>
-    <a class="nav-link" href="index.html">Guided solution</a>
+    <a class="nav-link" href="../chapter2/index.html">Guided solution</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
+    <a class="nav-link" href="../chapter2/section1.html">Guided solution (page 1)</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
+    <a class="nav-link" href="../chapter2/section2.html">Guided solution (page 2)</a>
   </li>
 </ul>
   </li>
@@ -122,7 +122,8 @@
 <nav class="breadcrumbs" aria-label="breadcrumbs">
   <ul>
     <li><a href="../index.html">Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</a></li>
-    <li><a href="index.html">Guided solution</a></li>
+    <li><a href="index.html">What’s in this break-fix?</a></li>
+    <li><a href="section3.html">Break-fix Scenario</a></li>
   </ul>
 </nav>
 </div>
@@ -131,25 +132,78 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Guided solution</h1>
+<h1 class="page">Break-fix Scenario</h1>
+<div id="preamble">
+<div class="sectionbody">
 <div class="paragraph">
-<p>This section presents a guided solution to the break-fix activity.</p>
+<p>Objectives:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Investigate the instance connectivity issue in Red Hat OpenStack Platform.</p>
+</li>
+<li>
+<p>Solve the instance connectivity in the hands-on lab environment.</p>
+</li>
+<li>
+<p>Familarize with Distributed Virtual Routing (DVR) Functionality.</p>
+</li>
+<li>
+<p>Derive the tap interface name.</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Use this section to:</p>
+<p>Scenario:
+Your team manages a Red Hat OpenStack Platform (RHOSP) infrastructure used by an important development team for your company. There was a requirement from your internal networking team to have Open Virtual Network (OVN), an open-source software-defined networking (SDN) solution that seamlessly integrates with OpenStack. Recently networking team noticed that there is connectivity issue with instance running in OpenStack envrionment.</p>
 </div>
 <div class="paragraph">
-<p>Learn one possible path to resolving the issue.</p>
+<p>They noticed the following error:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
+ssh: connect to host 172.25.250.186 port 22: Connection timed out</pre>
+</div>
 </div>
 <div class="paragraph">
-<p>Get some tips for investigating and resolving similar issues.</p>
+<p>In the preceding output, ip address can differ in your lab environemnt.</p>
 </div>
-<div class="paragraph">
-<p>If you&#8217;re still stuck after exhausting your expertise and resources on the break-fix activity:</p>
 </div>
-<div class="paragraph">
-<p>Use this solution to complete the activity.
-Check your work when you finish to receive a grade for this activity.</p>
+</div>
+<div class="sect1">
+<h2 id="_recreate_scenario"><a class="anchor" href="#_recreate_scenario"></a>Recreate scenario</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Recreate this scenario by running the following on workstation as stack user:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation ~]$ ssh student@director
+Warning: Permanently added 'director' (ED25519) to the list of known hosts.
+student@director's password:
+Activate the web console with: systemctl enable --now cockpit.socket
+
+Register this system with Red Hat Insights: insights-client --register
+Create an account or view all your systems at https://red.ht/insights-dashboard
+Last login: Fri Jan 26 10:45:39 2024 from 172.25.252.254
+
+[student@director ~]$ sudo su - stack
+[sudo] password for student:
+Last login: Thu Feb 29 10:37:46 EST 2024 from 172.25.250.9 on pts/0
+
+[stack@director ~]$ source overcloudrc
+
+(overcloud) [stack@director ~]$ lab start bfx022
+Running start action against scenario bfx022
+Run the following command:
+ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186</pre>
+</div>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -158,14 +212,34 @@ Check your work when you finish to receive a grade for this activity.</p>
 <i class="fa icon-note" title="Note"></i>
 </td>
 <td class="content">
-The steps detailed in these solution pages are optional. They provide additional guidance for those struggling with the break-fix activity. We encourage you to only use these pages if you are completely stuck in solving the issue.
+<div class="paragraph">
+<p>When you run any command with sudo, in case it expects a password then provide the student as a password.</p>
+</div>
 </td>
 </tr>
 </table>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>This breaks the connectivity to instance.</p>
+</li>
+<li>
+<p>To ensure scenario is recreated, run the ssh command from the previous output:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
+ssh: connect to host 172.25.250.186 port 22: Connection timed out</pre>
+</div>
+</div>
+</div>
+</div>
 <nav class="pagination">
-  <span class="prev"><a href="../chapter1/section3.html">Break-fix Scenario</a></span>
-  <span class="next"><a href="section1.html">Guided solution (page 1)</a></span>
+  <span class="prev"><a href="section2.html">Check your work</a></span>
+  <span class="next"><a href="../chapter2/index.html">Guided solution</a></span>
 </nav>
 </article>
   </div>

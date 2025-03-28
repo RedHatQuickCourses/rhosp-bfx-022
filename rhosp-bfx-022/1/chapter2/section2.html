@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Guided solution (page 2 of 2) :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
+    <title>Guided solution (page 2) :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
     <link rel="prev" href="section1.html">
-    <link rel="next" href="../appendix/appendix.html">
+    <link rel="next" href="../chapter3/index.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <script>var uiRootPath = '../../../_'</script>
@@ -40,7 +40,7 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../index.html">Home</a>
+    <a class="nav-link" href="../index.html">Red Hat OpenStack Platform: Break-fix Practice - Troubleshooting VM Connectivity Issue</a>
   </li>
 </ul>
   </li>
@@ -63,6 +63,9 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
   </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section3.html">Break-fix Scenario</a>
+  </li>
 </ul>
   </li>
 </ul>
@@ -74,10 +77,10 @@
     <a class="nav-link" href="index.html">Guided solution</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="section1.html">Guided solution (page 1 of 2)</a>
+    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
   </li>
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="section2.html">Guided solution (page 2 of 2)</a>
+    <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
   </li>
 </ul>
   </li>
@@ -86,7 +89,7 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../appendix/appendix.html">Appendix</a>
+    <a class="nav-link" href="../chapter3/index.html">Summary</a>
   </li>
 </ul>
   </li>
@@ -120,7 +123,7 @@
   <ul>
     <li><a href="../index.html">Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</a></li>
     <li><a href="index.html">Guided solution</a></li>
-    <li><a href="section2.html">Guided solution (page 2 of 2)</a></li>
+    <li><a href="section2.html">Guided solution (page 2)</a></li>
   </ul>
 </nav>
 </div>
@@ -129,13 +132,134 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Guided solution (page 2 of 2)</h1>
+<h1 class="page">Guided solution (page 2)</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Connect to the workstation VM&#8217;s console to access the instance&#8217;s console</p>
 <div class="paragraph">
-<p>FIXME: Provide step-by-step instructions here to resolve the issue.</p>
+<p>Refer to the Access instance’s console instructions under Additional information section of Break-fix Activity page.</p>
+</div>
+</li>
+<li>
+<p>From GUI console of workstation, connect to director VM and get the instance&#8217;s console URL.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack console url show scenario-bfx022-vm
++-------+-----------------------------------------------------------------------------------------------+
+| Field | Value                                                                                         |
++-------+-----------------------------------------------------------------------------------------------+
+| type  | novnc                                                                                         |
+| url   | http://172.25.250.247:6080/vnc_auto.html?path=%3Ftoken%3Dfd8950de-696f-4ab8-a87f-eb730086f68c |
++-------+-----------------------------------------------------------------------------------------------+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The preceding output can differ in your environment.</p>
+</div>
+<div class="paragraph">
+<p>Upon accessing the console, you might get the "Kernel panic" boot failure message, indicating the VM was not successfully booted.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="_images/rhosp-bfx-022.png" alt="rhosp bfx 022">
+</div>
+</div>
+</li>
+<li>
+<p>There could be something wrong with vm&#8217;s configuration. Use openstack server show to check details of the instance.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack server show scenario-5-vm
+. . .
+flavor                              | m1.tiny (3ab59dd5-f848-4bb7-becb-c4b4ac459507)
+. . .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Observe that flavor being used for the instance is not enough (m1.tiny with 64mb RAM).</p>
+</div>
+</li>
+<li>
+<p>List available flavors on the cluster.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack flavor list
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+
+| ID                                   | Name      | RAM | Disk | Ephemeral | VCPUs | Is Public |
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+
+| 3ab59dd5-f848-4bb7-becb-c4b4ac459507 | m1.tiny   |  64 |    1 |         0 |     1 | True      |
+| c3bf3d17-23f3-481d-813e-9ada4d47b368 | m1.medium | 512 |   10 |         0 |     1 | True      |
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>We have m1.medium flavor with better ram.</p>
+</div>
+</li>
+<li>
+<p>Change the flavor of the instance to use m1.medium.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack server resize --flavor m1.medium scenario-bfx022-vm</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Observe the console url again and note the VM is now booted and is on login prompt.</p>
+</div>
+</li>
+<li>
+<p>Connect to the instance using ssh:</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
+Warning: Permanently added '172.25.250.186' (ECDSA) to the list of known hosts.
+sign_and_send_pubkey: no mutual signature supported
+cirros@172.25.250.186's password:
+$ cat /etc/cirros/version
+0.5.2
+$</pre>
+</div>
+</div>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_evaluation"><a class="anchor" href="#_evaluation"></a>Evaluation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As the stack user on the director machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[stack@director ~]$ lab grade bfx022</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_finish"><a class="anchor" href="#_finish"></a>Finish</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Run the lab finish command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>[stack@director ~]$ lab finish bfx022</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This concludes the section.</p>
+</div>
+</div>
 </div>
 <nav class="pagination">
-  <span class="prev"><a href="section1.html">Guided solution (page 1 of 2)</a></span>
-  <span class="next"><a href="../appendix/appendix.html">Appendix</a></span>
+  <span class="prev"><a href="section1.html">Guided solution (page 1)</a></span>
+  <span class="next"><a href="../chapter3/index.html">Summary</a></span>
 </nav>
 </article>
   </div>

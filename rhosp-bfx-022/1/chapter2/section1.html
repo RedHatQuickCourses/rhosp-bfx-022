@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Guided solution (page 1 of 2) :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
+    <title>Guided solution (page 1) :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
     <link rel="prev" href="index.html">
     <link rel="next" href="section2.html">
     <meta name="generator" content="Antora 3.1.3">
@@ -40,7 +40,7 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../index.html">Home</a>
+    <a class="nav-link" href="../index.html">Red Hat OpenStack Platform: Break-fix Practice - Troubleshooting VM Connectivity Issue</a>
   </li>
 </ul>
   </li>
@@ -63,6 +63,9 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="../chapter1/section2.html">Check your work</a>
   </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="../chapter1/section3.html">Break-fix Scenario</a>
+  </li>
 </ul>
   </li>
 </ul>
@@ -74,10 +77,10 @@
     <a class="nav-link" href="index.html">Guided solution</a>
 <ul class="nav-list">
   <li class="nav-item is-current-page" data-depth="2">
-    <a class="nav-link" href="section1.html">Guided solution (page 1 of 2)</a>
+    <a class="nav-link" href="section1.html">Guided solution (page 1)</a>
   </li>
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="section2.html">Guided solution (page 2 of 2)</a>
+    <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
   </li>
 </ul>
   </li>
@@ -86,7 +89,7 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../appendix/appendix.html">Appendix</a>
+    <a class="nav-link" href="../chapter3/index.html">Summary</a>
   </li>
 </ul>
   </li>
@@ -120,7 +123,7 @@
   <ul>
     <li><a href="../index.html">Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</a></li>
     <li><a href="index.html">Guided solution</a></li>
-    <li><a href="section1.html">Guided solution (page 1 of 2)</a></li>
+    <li><a href="section1.html">Guided solution (page 1)</a></li>
   </ul>
 </nav>
 </div>
@@ -129,13 +132,247 @@
   <div class="toc-menu"></div>
 </aside>
 <article class="doc">
-<h1 class="page">Guided solution (page 1 of 2)</h1>
+<h1 class="page">Guided solution (page 1)</h1>
+<div class="sect1">
+<h2 id="_objectives"><a class="anchor" href="#_objectives"></a>Objectives</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Investigate the instance connectivity issue in Red Hat OpenStack Platform.</p>
+</li>
+<li>
+<p>Solve the instance connectivity in the hands-on lab environment.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_outcomes"><a class="anchor" href="#_outcomes"></a>Outcomes</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p>Investigate why ssh to instance is not working.</p>
+</li>
+<li>
+<p>Fix the ssh to instance failing issue.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_instructions"><a class="anchor" href="#_instructions"></a>Instructions</h2>
+<div class="sectionbody">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Break the environment if you have not done it and step through the fix.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[student@workstation ~]$ ssh stack@director
+
+[stack@director ~]$ source overcloudrc
+
+(overcloud) [stack@director ~]$ lab start bfx022
+Running start action against scenario bfx022
+Run the following command:
+ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Run the ssh command from the previous lab command output and notice the Connection timed out error. Also run the ping command against instance IP.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
+ssh: connect to host 172.25.250.186 port 22: Connection timed out
+
+(overcloud) [stack@director ~]$ ping 172.25.250.186 -c 1
+PING 172.25.250.186 (172.25.250.186) 56(84) bytes of data.
+
+--- 172.25.250.186 ping statistics ---
+1 packets transmitted, 0 received, 100% packet loss, time 0ms</pre>
+</div>
+</div>
 <div class="paragraph">
-<p>FIXME: Provide step-by-step instructions here to resolve the issue.</p>
+<p>You observe that both ping and ssh attempts failed which indicates lack of connectivity.</p>
+</div>
+</li>
+<li>
+<p>Access the overcloud environment and determine the specific compute node where the instance is currently running.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack server list --long
++--------------------------------------+---------------+--------+------------+-------------+----------------------------------------------------+---------------------+--------------------------------------+-------------+--------------------------------------+-------------------+-------------------------------------+------------+
+| ID                                   | Name          | Status | Task State | Power State | Networks                                           | Image Name          | Image ID                             | Flavor Name | Flavor ID                            | Availability Zone | Host                                | Properties |
++--------------------------------------+---------------+--------+------------+-------------+----------------------------------------------------+---------------------+--------------------------------------+-------------+--------------------------------------+-------------------+-------------------------------------+------------+
+| 4756da74-4ba2-4172-ae37-0333d3f8c164 | scenario-5-vm | ACTIVE | None       | Running     | scenario-5-network=172.25.250.186, 192.168.150.162 | cirros-0.5.2-x86_64 | 06e98912-2ccc-439a-b19b-5a67c2bff6f3 | m1.tiny     | 3ab59dd5-f848-4bb7-becb-c4b4ac459507 | nova              | overcloud-novacompute-1.localdomain |            |
++--------------------------------------+---------------+--------+------------+-------------+----------------------------------------------------+---------------------+--------------------------------------+-------------+--------------------------------------+-------------------+-------------------------------------+------------+</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You observe that it is overcloud-novacompute-1.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The RHOSP cluster is configured to operate with Distributed Virtual Routing (DVR) functionality.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</li>
+<li>
+<p>Examine the ARP cache on the director VM.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ip neighbor | grep 172.25.250.186
+172.25.250.186 dev eth0 lladdr fa:16:3e:1d:72:81 STALE</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An entry with the floating IP associated with a MAC address, indicating successful ARP negotiation.</p>
+</li>
+<li>
+<p>This signifies functional communication via ARP, but ICMP communication remains problematic.</p>
+</li>
+<li>
+<p>Proceed to verify whether the packets are being correctly routed to the appropriate node.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Now check whether the packets are being correctly routed to the appropriate node. Run the below command to access the compute node on which the instance is hosted.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ ssh tripleo-admin@overcloud-novacompute-1.localdomain
+
+[tripleo-admin@overcloud-novacompute-1 ~]$ sudo su -
+
+[root@overcloud-novacompute-1 ~]# ovs-vsctl show
+. . .
+    Bridge br-ex
+        fail_mode: standalone
+        Port ens4
+            Interface ens4
+        Port br-ex
+            Interface br-ex
+                type: internal
+. . .</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Take a note that the inteface name ens4 is associated with the external bridge br-ex in the output.</p>
+</div>
+</li>
+<li>
+<p>To verify incoming traffic, initiate a tcpdump on this interface and try to ping the instance from another terminal.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[root@overcloud-novacompute-1 ~]# tcpdump -envvi ens4 icmp
+dropped privs to tcpdump
+tcpdump: listening on ens4, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+08:50:27.128216 52:54:00:04:fa:0b &gt; fa:16:3e:1d:72:81, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 36758, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 172.25.250.186: ICMP echo request, id 3, seq 1, length 64
+08:50:40.189080 52:54:00:04:fa:0b &gt; fa:16:3e:1d:72:81, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 37708, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 172.25.250.186: ICMP echo request, id 4, seq 1, length 64
+08:51:00.718370 52:54:00:04:fa:0b &gt; fa:16:3e:1d:72:81, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 64, id 46124, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 172.25.250.186: ICMP echo request, id 5, seq 1, length 64
+. . .</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You observe that ICMP echo requests arriving at the machine.</p>
+</li>
+<li>
+<p>The presence of ICMP echo requests reaching the external NIC on the compute node indicates the proper functioning of the Distributed Virtual Router (DVR).</p>
+</li>
+<li>
+<p>However, you observed that echo requests are not receiving the echo replies on the director VM.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Determine the tap interface used for the instance on the compute node.</p>
+<div class="listingblock">
+<div class="content">
+<pre>(overcloud) [stack@director ~]$ openstack port list --server scenario-bfx022-vm
++--------------------------------------+------+-------------------+--------------------------------------------------------------------------------+--------+
+| ID                                   | Name | MAC Address       | Fixed IP Addresses                                                             | Status |
++--------------------------------------+------+-------------------+--------------------------------------------------------------------------------+--------+
+| 888f43d5-70fe-4373-bb3f-271dc003d4bd |      | fa:16:3e:3f:58:7c | ip_address='192.168.150.162', subnet_id='04f47564-3a42-4eed-bdc8-a4a7bd9c0d54' | ACTIVE |
++--------------------------------------+------+-------------------+--------------------------------------------------------------------------------+--------+</pre>
+</div>
+</div>
+</li>
+<li>
+<p>This interface is named in the format tap followed by the initial part of the port ID. For instance, here the port ID is 888f43d5-70fe-4373-bb3f-271dc003d4bd and the associated tap interface would be tap888f43d5-70.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[root@overcloud-novacompute-1 ~]# ip l show tap888f43d5-70
+18: tap888f43d5-70: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1442 qdisc noqueue master ovs-system state UNKNOWN mode DEFAULT group default qlen 1000
+    link/ether fe:16:3e:3f:58:7c brd ff:ff:ff:ff:ff:ff</pre>
+</div>
+</div>
+</li>
+<li>
+<p>Execute a tcpdump on this tap interface on attempting to ping the instance.</p>
+<div class="listingblock">
+<div class="content">
+<pre>[root@overcloud-novacompute-1 ~]# tcpdump -envvi tap888f43d5-70
+dropped privs to tcpdump
+tcpdump: listening on tap888f43d5-70, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+10:20:45.702021 fa:16:3e:e4:57:e8 &gt; fa:16:3e:3f:58:7c, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 63, id 49554, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 192.168.150.162: ICMP echo request, id 8, seq 1, length 64
+10:21:01.903078 fa:16:3e:e4:57:e8 &gt; fa:16:3e:3f:58:7c, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 63, id 50376, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 192.168.150.162: ICMP echo request, id 9, seq 1, length 64
+10:23:02.551100 fa:16:3e:e4:57:e8 &gt; fa:16:3e:3f:58:7c, ethertype IPv4 (0x0800), length 98: (tos 0x0, ttl 63, id 37890, offset 0, flags [DF], proto ICMP (1), length 84)
+    172.25.250.11 &gt; 192.168.150.162: ICMP echo request, id 10, seq 1, length 64
+. . .</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Successful delivery of the echo request to the tap interface linked with the instance indicates that the network path and connectivity mechanisms are operating correctly.</p>
+</li>
+<li>
+<p>All indicators appeared satisfactory from the Neutron perspective.* The underlying networking infrastructure, including OVN components, is functioning as intended.</p>
+</li>
+<li>
+<p>It appeared that the virtual machine (VM) failed to generate a reply when the echo request reached it.</p>
+</li>
+<li>
+<p>The problem might reside within the VM&#8217;s internal configuration or its behavior towards incoming requests.</p>
+</li>
+<li>
+<p>Access the instance&#8217;s console for further investigation on this issue.</p>
+</li>
+</ul>
+</div>
+</li>
+</ol>
+</div>
+</div>
 </div>
 <nav class="pagination">
   <span class="prev"><a href="index.html">Guided solution</a></span>
-  <span class="next"><a href="section2.html">Guided solution (page 2 of 2)</a></span>
+  <span class="next"><a href="section2.html">Guided solution (page 2)</a></span>
 </nav>
 </article>
   </div>
