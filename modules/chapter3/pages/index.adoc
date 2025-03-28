@@ -1,0 +1,30 @@
+= Summary
+
+*Verify ARP Cache*:
+
+* Reviewed the ARP cache on the initiating client system, which in this case was the director VM.
+
+* Detected a cache entry, confirming proper ARP functionality.
+
+*Run tcpdump on Compute Node*:
+
+* Executed tcpdump on the compute node's network interface associated with the br-ex bridge and on the tap interface linked to the instance.
+
+* Noted incoming ICMP echo requests, but replies were absent.
+
+* Indicated a functional OVN network setup; however, the instance was not responding to ping requests.
+
+*Examine VM's Console*:
+
+* Accessed the VM's console to delve deeper into the issue.
+
+* Observed a Kernel panic message.
+
+*Inspected Instance's configuration*:
+
+* Identified the flavor used by the instance.
+
+* Observed the amount of RAM being used was insufficient.
+
+* Resized the instance to bigger flavor and it booted.
+

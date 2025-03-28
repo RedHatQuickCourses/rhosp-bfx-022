@@ -1,3 +1,85 @@
-= Guided solution (page 2 of 2)
+= Guided solution (page 2)
 
-FIXME: Provide step-by-step instructions here to resolve the issue.
+1. Connect to the workstation VM's console to access the instance's console
++
+Refer to the Access instance’s console instructions under Additional information section of Break-fix Activity page.
+
+2. From GUI console of workstation, connect to director VM and get the instance's console URL.
++
+----
+(overcloud) [stack@director ~]$ openstack console url show scenario-bfx022-vm
++-------+-----------------------------------------------------------------------------------------------+
+| Field | Value                                                                                         |
++-------+-----------------------------------------------------------------------------------------------+
+| type  | novnc                                                                                         |
+| url   | http://172.25.250.247:6080/vnc_auto.html?path=%3Ftoken%3Dfd8950de-696f-4ab8-a87f-eb730086f68c |
++-------+-----------------------------------------------------------------------------------------------+
+----
++
+The preceding output can differ in your environment.
++
+Upon accessing the console, you might get the "Kernel panic" boot failure message, indicating the VM was not successfully booted.
++
+image::rhosp-bfx-022.png[]
+
+3. There could be something wrong with vm's configuration. Use openstack server show to check details of the instance.
++
+----
+(overcloud) [stack@director ~]$ openstack server show scenario-5-vm
+. . .
+flavor                              | m1.tiny (3ab59dd5-f848-4bb7-becb-c4b4ac459507)
+. . .
+----
++
+Observe that flavor being used for the instance is not enough (m1.tiny with 64mb RAM).
+
+
+4. List available flavors on the cluster.
++
+----
+(overcloud) [stack@director ~]$ openstack flavor list
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+
+| ID                                   | Name      | RAM | Disk | Ephemeral | VCPUs | Is Public |
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+
+| 3ab59dd5-f848-4bb7-becb-c4b4ac459507 | m1.tiny   |  64 |    1 |         0 |     1 | True      |
+| c3bf3d17-23f3-481d-813e-9ada4d47b368 | m1.medium | 512 |   10 |         0 |     1 | True      |
++--------------------------------------+-----------+-----+------+-----------+-------+-----------+
+----
++
+We have m1.medium flavor with better ram.
+
+5. Change the flavor of the instance to use m1.medium.
++
+----
+(overcloud) [stack@director ~]$ openstack server resize --flavor m1.medium scenario-bfx022-vm
+----
++
+Observe the console url again and note the VM is now booted and is on login prompt.
+
+6. Connect to the instance using ssh:
++
+----
+(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
+Warning: Permanently added '172.25.250.186' (ECDSA) to the list of known hosts.
+sign_and_send_pubkey: no mutual signature supported
+cirros@172.25.250.186's password:
+$ cat /etc/cirros/version
+0.5.2
+$
+----
+
+== Evaluation
+
+As the stack user on the director machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.
+----
+[stack@director ~]$ lab grade bfx022
+----
+
+== Finish
+
+Run the lab finish command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.
+----
+[stack@director ~]$ lab finish bfx022
+----
+This concludes the section.
+
