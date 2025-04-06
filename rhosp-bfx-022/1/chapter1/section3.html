@@ -163,8 +163,8 @@ Your team manages a Red Hat OpenStack Platform (RHOSP) infrastructure used by an
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
-ssh: connect to host 172.25.250.186 port 22: Connection timed out</pre>
+<pre>[student@workstation ~]$ ssh -i /home/student/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@192.168.51.159
+ssh: connect to host 192.168.51.159 port 22: Connection timed out</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -184,25 +184,17 @@ ssh: connect to host 172.25.250.186 port 22: Connection timed out</pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>[student@workstation ~]$ ssh student@director
-Warning: Permanently added 'director' (ED25519) to the list of known hosts.
-student@director's password:
-Activate the web console with: systemctl enable --now cockpit.socket
+<pre>[student@workstation ~]$ oc login -u admin -p redhatocp https://api.ocp4.example.com:6443
+Login successful.
 
-Register this system with Red Hat Insights: insights-client --register
-Create an account or view all your systems at https://red.ht/insights-dashboard
-Last login: Fri Jan 26 10:45:39 2024 from 172.25.252.254
+You have access to 76 projects, the list has been suppressed. You can list all projects with 'oc projects'
 
-[student@director ~]$ sudo su - stack
-[sudo] password for student:
-Last login: Thu Feb 29 10:37:46 EST 2024 from 172.25.250.9 on pts/0
+Using project "openstack".
 
-[stack@director ~]$ source overcloudrc
-
-(overcloud) [stack@director ~]$ lab start bfx022
+[student@workstation ~]$ lab start bfx022
 Running start action against scenario bfx022
 Run the following command:
-ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186</pre>
+ssh -i /home/student/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@192.168.51.159</pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -231,8 +223,8 @@ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@1
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>(overcloud) [stack@director ~]$ ssh -i /home/stack/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@172.25.250.186
-ssh: connect to host 172.25.250.186 port 22: Connection timed out</pre>
+<pre>[student@workstation ~]$ ssh -i /home/student/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@192.168.51.159
+ssh: connect to host 192.168.51.159 port 22: Connection timed out</pre>
 </div>
 </div>
 </div>
