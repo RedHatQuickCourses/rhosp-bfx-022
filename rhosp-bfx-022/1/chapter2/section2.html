@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Guided solution (page 2) :: Red Hat OpenStack Networking Break-fix Practice: Troubleshooting VM Connectivity Issue</title>
     <link rel="prev" href="section1.html">
-    <link rel="next" href="../chapter3/index.html">
+    <link rel="next" href="section3.html">
     <meta name="generator" content="Antora 3.1.3">
     <link rel="stylesheet" href="../../../_/css/site.css">
     <script>var uiRootPath = '../../../_'</script>
@@ -40,7 +40,7 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
-    <a class="nav-link" href="../index.html">Red Hat OpenStack Platform: Break-fix Practice - Troubleshooting VM Connectivity Issue</a>
+    <a class="nav-link" href="../index.html">Red Hat OpenStack Platform: Break-fix Practice - 1</a>
   </li>
 </ul>
   </li>
@@ -81,6 +81,9 @@
   </li>
   <li class="nav-item is-current-page" data-depth="2">
     <a class="nav-link" href="section2.html">Guided solution (page 2)</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="section3.html">Evalution</a>
   </li>
 </ul>
   </li>
@@ -133,19 +136,20 @@
 </aside>
 <article class="doc">
 <h1 class="page">Guided solution (page 2)</h1>
-<div id="preamble">
-<div class="sectionbody">
+<div class="paragraph">
+<p><strong>Connect to the workstation VM&#8217;s console to access the instance&#8217;s console.</strong></p>
+</div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Connect to the workstation VM&#8217;s console to access the instance&#8217;s console.</p>
-<div class="paragraph">
-<p>Refer to the Access instance’s console instructions under Additional information section of Break-fix Activity page.</p>
-</div>
-</li>
-<li>
-<p>From GUI console of workstation, connect to director VM and get the instance&#8217;s console URL.</p>
+<p>From GUI console of workstation, connect to workstation VM and get the instance’s console URL.</p>
 <div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack console url show scenario-bfx022-vm</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
 <div class="content">
 <pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack console url show scenario-bfx022-vm
 +----------+-----------------------------------------------------------------------------------------------------------------------------------------+
@@ -153,24 +157,42 @@
 +----------+-----------------------------------------------------------------------------------------------------------------------------------------+
 | protocol | vnc                                                                                                                                     |
 | type     | novnc                                                                                                                                   |
-| url      | https://nova-novncproxy-cell1-public-openstack.apps.ocp4.example.com/vnc_lite.html?path=%3Ftoken%3D90a8deb1-e3e2-45da-8f1a-bb0ebda5435f |
-+----------+-----------------------------------------------------------------------------------------------------------------------------------------+</pre>
+| url      | https://nova-novncproxy-cell1-public-openstack.apps.ocp4.example.com/vnc_lite.html?path=%3Ftoken%3D67f1b610-1716-4c82-ae3b-aee0afce8446 |
++----------+-----------------------------------------------------------------------------------------------------------------------------------------+
+[student@workstation ~]$</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>The preceding output can differ in your environment.</p>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The command is to be run from a terminal within the GUI console of workstation VM.
+</td>
+</tr>
+</table>
 </div>
-<div class="paragraph">
-<p>Upon accessing the console, you might get the "Kernel panic" boot failure message, indicating the VM was not successfully booted.</p>
-</div>
+</li>
+<li>
+<p>Click the link in the output of above command to access the instance’s console in a web browser <strong>from the workstation VM’s GUI console</strong>.</p>
 <div class="imageblock">
 <div class="content">
 <img src="_images/rhosp-bfx-022.png" alt="rhosp bfx 022">
 </div>
 </div>
+<div class="paragraph">
+<p><strong>Upon accessing the console, you might get the "Kernel panic" boot failure message, indicating the VM was not successfully booted.</strong></p>
+</div>
 </li>
 <li>
 <p>There could be something wrong with vm&#8217;s configuration. Use openstack server show to check details of the instance.</p>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server show scenario-bfx022-vm</code></pre>
+</div>
+</div>
 <div class="listingblock">
 <div class="content">
 <pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server show scenario-bfx022-vm
@@ -180,87 +202,49 @@
 </div>
 </div>
 <div class="paragraph">
-<p>Observe that flavor being used for the instance is not enough (m1.tiny with 64mb RAM).</p>
+<p><strong>Observe that flavor being used for the instance is not enough (m1.tiny with 64mb RAM).</strong></p>
 </div>
 </li>
 <li>
 <p>List available flavors on the cluster.</p>
 <div class="listingblock">
 <div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack flavor list</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Sample output</div>
+<div class="content">
 <pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack flavor list
 +--------------------------------------+----------+-----+------+-----------+-------+-----------+
 | ID                                   | Name     | RAM | Disk | Ephemeral | VCPUs | Is Public |
 +--------------------------------------+----------+-----+------+-----------+-------+-----------+
-| 9a077056-c457-4ae8-8bab-9b51abb2ec4d | m1.small | 512 |    1 |         0 |     1 | True      |
-| b956895b-3f7c-4c2e-9cfe-b54e85364909 | m1.tiny  |  64 |    1 |         0 |     1 | True      |
+| 400fc6d4-4e07-4b93-800a-a252b469915e | m1.small | 512 |    1 |         0 |     1 | True      |
+| 64d632e4-9227-484e-9cd0-a5789691b839 | tiny     | 512 |    1 |         0 |     1 | True      |
+| d8c5902e-dc31-4261-89d7-39a5b736fb03 | m1.tiny  |  64 |    1 |         0 |     1 | True      |
 +--------------------------------------+----------+-----+------+-----------+-------+-----------+</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>We have m1.medium flavor with better ram.</p>
+<p><strong>We have m1.medium flavor with better ram.</strong></p>
 </div>
 </li>
 <li>
 <p>Change the flavor of the instance to use m1.medium.</p>
 <div class="listingblock">
 <div class="content">
-<pre>[student@workstation ~]$ oc exec -n openstack openstackclient -- openstack server resize --flavor m1.small scenario-bfx022-vm</pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc exec -n openstack openstackclient -- openstack server resize --flavor m1.small scenario-bfx022-vm</code></pre>
 </div>
-</div>
-<div class="paragraph">
-<p>Observe the console url again and note the VM is now booted and is on login prompt.</p>
 </div>
 </li>
 <li>
-<p>Connect to the instance using ssh:</p>
-<div class="listingblock">
-<div class="content">
-<pre>[student@workstation ~]$ ssh -i /home/student/osp_training/.scenariobfx022/scenario-bfx022-key.pem cirros@192.168.51.159
-Warning: Permanently added '192.168.51.159' (ECDSA) to the list of known hosts.
-sign_and_send_pubkey: no mutual signature supported
-cirros@192.168.51.159's password:
-$ cat /etc/cirros/version
-0.5.2
-$</pre>
-</div>
-</div>
+<p>Observe the console url again and note the VM is now booted and is on login prompt.</p>
 </li>
 </ol>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_evaluation"><a class="anchor" href="#_evaluation"></a>Evaluation</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>As the stack user on the director machine, use the lab command to grade your work. Correct any reported failures and rerun the command until successful.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>[stack@director ~]$ lab grade bfx022</pre>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_finish"><a class="anchor" href="#_finish"></a>Finish</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Run the lab finish command to complete this exercise. This step is important to ensure that resources from previous exercises do not impact upcoming exercises.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>[stack@director ~]$ lab finish bfx022</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This concludes the section.</p>
-</div>
-</div>
-</div>
 <nav class="pagination">
   <span class="prev"><a href="section1.html">Guided solution (page 1)</a></span>
-  <span class="next"><a href="../chapter3/index.html">Summary</a></span>
+  <span class="next"><a href="section3.html">Evalution</a></span>
 </nav>
 </article>
   </div>
