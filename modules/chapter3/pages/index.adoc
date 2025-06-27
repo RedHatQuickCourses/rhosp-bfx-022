@@ -2,7 +2,7 @@
 
 *Verify ARP Cache*:
 
-* Reviewed the ARP cache on the initiating client system, which in this case was the director VM.
+* Reviewed the ARP cache on the initiating client system, which in this case was the workstation VM.
 
 * Detected a cache entry, confirming proper ARP functionality.
 

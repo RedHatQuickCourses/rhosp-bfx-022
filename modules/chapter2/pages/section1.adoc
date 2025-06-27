@@ -179,7 +179,7 @@ tcpdump: listening on eth2, link-type EN10MB (Ethernet), snapshot length 262144 
 
 - The presence of ICMP echo requests reaching the external NIC on the compute node indicates the proper functioning of the Distributed Virtual Router (DVR).
 
-- However, you observed that echo requests are not receiving the echo replies on the director VM.
+- However, you observed that echo requests are not receiving the echo replies on the workstation VM.
 
 . Determine the tap interface used for the instance on the compute node.
 
